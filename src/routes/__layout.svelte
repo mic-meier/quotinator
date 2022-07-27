@@ -1,7 +1,8 @@
 <script lang="ts">
 	import Auth from '$lib/auth/Auth.svelte';
-	import { user } from '$lib/sessionStore';
+	import { quotes, user } from '$lib/sessionStore';
 	import { supabase } from '$lib/supabaseClient';
+	import type { Quote } from '@src/lib/types';
 	import '../app.css';
 
 	user.set(supabase.auth.user());
@@ -12,7 +13,16 @@
 			console.log($user);
 			// get quotes here
 		}
+		getQuotes();
 	});
+
+	getQuotes();
+
+	async function getQuotes() {
+		const { data, error } = await supabase.from<Quote>('quotes').select();
+		quotes.set(data);
+		console.log('quotes', $quotes);
+	}
 
 	async function signOut() {
 		supabase.auth.signOut();
